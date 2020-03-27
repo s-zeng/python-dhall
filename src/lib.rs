@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::collections::HashMap;
 use std::fmt;
 use std::marker::PhantomData;
 use failure::Fail;
@@ -7,7 +8,9 @@ use pyo3::prelude::*;
 use pyo3::exceptions::TypeError as PyTypeError;
 use pyo3::exceptions::ValueError as PyValueError;
 use pyo3::types::{PyDict, PyFloat, PyList, PyAny, PyTuple};
+use pyo3::types::{IntoPyDict};
 use pyo3::{import_exception, wrap_pyfunction};
+use serde_dhall::Value;
 
 use serde::de::{self, DeserializeSeed, Deserializer, MapAccess, SeqAccess, Visitor};
 use serde::ser::{self, Serialize, SerializeMap, SerializeSeq, Serializer};
@@ -228,32 +231,8 @@ pub fn loads_impl(
     let string_result: Result<String, _> = s.extract(py);
     match string_result {
         Ok(string) => {
-            let mut deserializer = serde_json::Deserializer::from_str(&string);
-            let seed = HyperJsonValue::new(py, &parse_float, &parse_int);
-            match seed.deserialize(&mut deserializer) {
-                Ok(py_object) => {
-                    deserializer
-                        .end()
-                        .map_err(|e| JSONDecodeError::py_err((e.to_string(), string.clone(), 0)))?;
-                    Ok(py_object)
-                }
-                Err(e) => {
-                    return convert_special_floats(py, &string, &parse_int).or_else(|err| {
-                        if e.is_syntax() {
-                            return Err(JSONDecodeError::py_err((
-                                format!("Value: {:?}, Error: {:?}", s, err),
-                                string.clone(),
-                                0,
-                            )));
-                        } else {
-                            return Err(PyValueError::py_err(format!(
-                                "Value: {:?}, Error: {:?}",
-                                s, e
-                            )));
-                        }
-                    });
-                }
-            }
+            let deserialized_map: HashMap<String, usize> = serde_dhall::from_str(&string).expect("oop");
+            return Ok(deserialized_map.into_py_dict(py).to_object(py))
         }
         _ => {
             let bytes: Vec<u8> = s.extract(py).or_else(|e| {

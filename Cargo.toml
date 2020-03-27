@@ -33,6 +33,7 @@ serde_json = "1.0.42"
 failure = "0.1.6"
 serde = "1.0.103"
 serde_derive = "1.0.103"
+serde_dhall = "0.4.0"
 pyo3 = "0.8.3"
 
 [lib]

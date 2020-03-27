@@ -7,6 +7,10 @@ ts := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 help: ## This help message
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
 
+test-dhall:
+	poetry run maturin build --manylinux off
+	pip install --force-reinstall target/wheels/hyperjson-*.whl
+
 .PHONY: build
 build: nightly dev-packages ## Builds Rust code and hyperjson Python modules
 	poetry run maturin build
