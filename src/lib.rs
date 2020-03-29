@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::collections::HashMap;
 use std::fmt;
 use std::marker::PhantomData;
 use failure::Fail;
@@ -8,9 +7,8 @@ use pyo3::prelude::*;
 use pyo3::exceptions::TypeError as PyTypeError;
 use pyo3::exceptions::ValueError as PyValueError;
 use pyo3::types::{PyDict, PyFloat, PyList, PyAny, PyTuple};
-use pyo3::types::{IntoPyDict};
 use pyo3::{import_exception, wrap_pyfunction};
-use serde_dhall::Value;
+use serde_json::Value;
 
 use serde::de::{self, DeserializeSeed, Deserializer, MapAccess, SeqAccess, Visitor};
 use serde::ser::{self, Serialize, SerializeMap, SerializeSeq, Serializer};
@@ -218,6 +216,46 @@ fn hyperjson(_py: Python, m: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
+/// Convert from a `serde_json::Value` to a `pyo3::object:PyObject`.
+pub fn from_json(py: Python, json: Value) -> Result<PyObject, PyErr> {
+    macro_rules! obj {
+        ($x:ident) => {
+            Ok($x.to_object(py))
+        }
+    }
+
+    match json {
+        Value::Number(x) => {
+            if let Some(n) = x.as_u64() {
+                obj!(n)
+            } else if let Some(n) = x.as_i64() {
+                obj!(n)
+            } else if let Some(n) = x.as_f64() {
+                obj!(n)
+            } else {
+                Err(PyTypeError::py_err("Invalid number"))
+            }
+        }
+        Value::String(x) => obj!(x),
+        Value::Bool(x) => obj!(x),
+        Value::Array(vec) => {
+            let mut elements = Vec::new();
+            for item in vec {
+                elements.push(from_json(py, item)?);
+            }
+            obj!(elements)
+        }
+        Value::Object(map) => {
+            let dict = PyDict::new(py);
+            for (key, value) in map {
+                dict.set_item(key, from_json(py, value)?)?;
+            }
+            obj!(dict)
+        }
+        Value::Null => Ok(py.None()),
+    }
+}
+
 pub fn loads_impl(
     py: Python,
     s: PyObject,
@@ -231,8 +269,9 @@ pub fn loads_impl(
     let string_result: Result<String, _> = s.extract(py);
     match string_result {
         Ok(string) => {
-            let deserialized_map: HashMap<String, usize> = serde_dhall::from_str(&string).expect("oop");
-            return Ok(deserialized_map.into_py_dict(py).to_object(py))
+            let json_val: serde_json::Value = serde_dhall::from_str(&string).expect("from_str");
+            let py_obj = from_json(py, json_val).expect("from_json");
+            return Ok(py_obj)
         }
         _ => {
             let bytes: Vec<u8> = s.extract(py).or_else(|e| {
