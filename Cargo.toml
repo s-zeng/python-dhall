@@ -1,18 +1,18 @@
 [package]
-name = "hyperjson"
-version = "0.2.4"
-authors = ["Matthias Endler <matthias-endler@gmx.net>"]
-description = "A hyper-fast Python module for reading/writing JSON data"
+name = "python-dhall"
+version = "0.0.1"
+authors = ["Tristan Cacqueray <tdecacqu@redhat.com>"]
+description = "A Python module for reading Dhall lang"
 edition = "2018"
 license = "Apache-2.0"
-repository = "https://github.com/mre/hyperjson"
-homepage = "https://github.com/mre/hyperjson"
+repository = "https://github.com/TristanCacqueray/python-dhall"
+homepage = "https://github.com/TristanCacqueray/python-dhall"
 readme = "README.md"
-keywords = ["fast", "json", "python"]
+keywords = ["dhall", "python"]
 
 [package.metadata.maturin]
 classifier = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "License :: OSI Approved",
@@ -26,6 +26,7 @@ classifier = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python",
     "Programming Language :: Rust",
+    "Programming Language :: Dhall",
 ]
 
 [dependencies]
@@ -37,20 +38,19 @@ serde_dhall = "0.4.0"
 pyo3 = "0.8.3"
 
 [lib]
-name = "hyperjson"
+name = "dhall"
 crate-type = ["rlib", "cdylib"]
 
 [features]
 # We must make this feature optional to build binaries such as the profiling crate
 default = ["pyo3/extension-module"]
 
-[workspace]
-members = [ "profiling" ]
+# [workspace]
+# members = [ "profiling" ]
 
-[profile.release]
-codegen-units = 1
-debug = false
-incremental = false
-lto = true
-opt-level = 3
-
+# [profile.release]
+# codegen-units = 1
+# debug = false
+# incremental = false
+# lto = true
+# opt-level = 3

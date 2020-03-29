@@ -200,7 +200,7 @@ pub fn dump(
 
 /// A hyper-fast JSON encoder/decoder written in Rust
 #[pymodule]
-fn hyperjson(_py: Python, m: &PyModule) -> PyResult<()> {
+fn dhall(_py: Python, m: &PyModule) -> PyResult<()> {
     // See https://github.com/PyO3/pyo3/issues/171
     // Use JSONDecodeError from stdlib until issue is resolved.
     // py_exception!(_hyperjson, JSONDecodeError);
@@ -210,8 +210,8 @@ fn hyperjson(_py: Python, m: &PyModule) -> PyResult<()> {
 
     m.add_wrapped(wrap_pyfunction!(load))?;
     m.add_wrapped(wrap_pyfunction!(loads))?;
-    m.add_wrapped(wrap_pyfunction!(dump))?;
-    m.add_wrapped(wrap_pyfunction!(dumps))?;
+    //m.add_wrapped(wrap_pyfunction!(dump))?;
+    //m.add_wrapped(wrap_pyfunction!(dumps))?;
 
     Ok(())
 }

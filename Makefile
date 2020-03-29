@@ -7,9 +7,10 @@ ts := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 help: ## This help message
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
 
-test-dhall:
+test-dhall: ## Builds the dhall binding
 	poetry run maturin build --manylinux off
-	pip install --force-reinstall target/wheels/hyperjson-*.whl
+	pip install --force-reinstall target/wheels/*.whl
+	python3 -c "import dhall; print(dhall.loads('True'))"
 
 .PHONY: build
 build: nightly dev-packages ## Builds Rust code and hyperjson Python modules
@@ -72,4 +73,3 @@ profile: nightly build-profile ## Run perf-based profiling (only works on Linux!
 	perf record --call-graph dwarf,16384 -e cpu-clock -F 997 target/release/profiling $(FLAGS)
 	time perf script | stackcollapse-perf.pl | c++filt | flamegraph.pl > $(OUTPUT_PATH)
 	@echo "$(OUTPUT_PATH)"
-
