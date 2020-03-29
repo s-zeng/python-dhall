@@ -269,33 +269,25 @@ pub fn loads_impl(
     let string_result: Result<String, _> = s.extract(py);
     match string_result {
         Ok(string) => {
-            let json_val: serde_json::Value = serde_dhall::from_str(&string).expect("from_str");
-            let py_obj = from_json(py, json_val).expect("from_json");
-            return Ok(py_obj)
-        }
-        _ => {
-            let bytes: Vec<u8> = s.extract(py).or_else(|e| {
-                Err(PyTypeError::py_err(format!(
-                    "the JSON object must be str, bytes or bytearray, got: {:?}",
-                    e
-                )))
-            })?;
-            let mut deserializer = serde_json::Deserializer::from_slice(&bytes);
-            let seed = HyperJsonValue::new(py, &parse_float, &parse_int);
-            match seed.deserialize(&mut deserializer) {
-                Ok(py_object) => {
-                    deserializer
-                        .end()
-                        .map_err(|e| JSONDecodeError::py_err((e.to_string(), bytes.clone(), 0)))?;
-                    Ok(py_object)
+            let json_val: std::result::Result<serde_json::Value, _> = serde_dhall::from_str(&string);
+            match json_val {
+                Ok(val) => {
+                    let py_obj = from_json(py, val).expect("from_json");
+                    return Ok(py_obj)
                 }
                 Err(e) => {
                     return Err(PyTypeError::py_err(format!(
-                        "the JSON object must be str, bytes or bytearray, got: {:?}",
+                        "{:?}",
                         e
                     )));
                 }
             }
+        }
+        Err(e) => {
+            return Err(PyTypeError::py_err(format!(
+                "the Dhall object must be str: {:?}",
+                e
+            )));
         }
     }
 }
