@@ -1,5 +1,5 @@
 [package]
-name = "python-dhall"
+name = "dhall"
 version = "0.0.1"
 authors = ["Tristan Cacqueray <tdecacqu@redhat.com>"]
 description = "A Python module for reading Dhall lang"

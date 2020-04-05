@@ -2,6 +2,12 @@
 
 `python-dhall` contains (WIP) [Dhall][dhall-lang] bindings for Python using the [rust][dhall-rust] implementation.
 
+Install using pip (need python-3.7 and probably fedora libssl too):
+
+```shell
+python3 -m pip install --user dhall
+```
+
 The binding implements a `loads` function that returns a python object similar to JSON:
 
 ```shell

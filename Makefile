@@ -9,8 +9,11 @@ help: ## This help message
 
 test-dhall: ## Builds the dhall binding
 	poetry run maturin build --manylinux 2010-unchecked
-	pip install --force-reinstall target/wheels/*.whl
+	pip install --force-reinstall target/wheels/dhall*.whl
 	python3 -c "import dhall; print(dhall.loads('True'))"
+
+publish: ## Publish the binding
+	twine upload target/wheels/dhall*.whl
 
 .PHONY: build
 build: nightly dev-packages ## Builds Rust code and hyperjson Python modules
