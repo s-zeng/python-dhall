@@ -2,7 +2,7 @@
 
 `python-dhall` contains (WIP) [Dhall][dhall-lang] bindings for Python using the [rust][dhall-rust] implementation.
 
-Install using pip (need python-3.7 and probably fedora libssl too):
+Install using pip (with python-3.6 or python-3.7 and libssl.so.1.1 as provided by fedora and ubuntu):
 
 ```shell
 python3 -m pip install --user dhall

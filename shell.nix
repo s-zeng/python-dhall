@@ -7,5 +7,5 @@ in
     with nixpkgs;
   nixpkgs.mkShell {
     name = "rust";
-    buildInputs = [ openssl pkgconfig nasm rustup ruststable cmake zlib python3 ];
+    buildInputs = [ openssl pkgconfig nasm rustup ruststable cmake zlib python3 python36 ];
   }
