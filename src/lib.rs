@@ -269,7 +269,7 @@ pub fn loads_impl(
     let string_result: Result<String, _> = s.extract(py);
     match string_result {
         Ok(string) => {
-            let json_val: std::result::Result<serde_json::Value, _> = serde_dhall::from_str(&string);
+            let json_val: std::result::Result<serde_json::Value, _> = serde_dhall::from_str(&string).parse();
             match json_val {
                 Ok(val) => {
                     let py_obj = from_json(py, val).expect("from_json");
