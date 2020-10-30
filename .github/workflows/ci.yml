@@ -14,34 +14,34 @@ on:
 #     - cron: "20 23 * * 6"
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v1
 
-      - name: Install latest nightly
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
+  #     - name: Install latest nightly
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: nightly
+  #         override: true
 
-      - name: Lint with rustfmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
+  #     - name: Lint with rustfmt
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: fmt
 
-      - name: Lint with clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --all-targets --all-features
+  #     - name: Lint with clippy
+  #       uses: actions-rs/cargo@v1
+  #       with:
+  #         command: clippy
+  #         args: --all-targets --all-features
 
-      # - name: Test with cargo
-      #   uses: actions-rs/cargo@v1.0.1
-      #   with:
-      #     command: test
-      #     toolchain: nightly
+  #     # - name: Test with cargo
+  #     #   uses: actions-rs/cargo@v1.0.1
+  #     #   with:
+  #     #     command: test
+  #     #     toolchain: nightly
 
   build:
     runs-on: ${{ matrix.os }}
