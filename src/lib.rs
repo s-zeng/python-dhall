@@ -1,12 +1,11 @@
+use failure::Fail;
 use std::collections::BTreeMap;
 use std::fmt;
 use std::marker::PhantomData;
-use failure::Fail;
 
-use pyo3::prelude::*;
 use pyo3::exceptions::TypeError as PyTypeError;
-use pyo3::exceptions::ValueError as PyValueError;
-use pyo3::types::{PyDict, PyFloat, PyList, PyAny, PyTuple};
+use pyo3::prelude::*;
+use pyo3::types::{PyAny, PyDict, PyFloat, PyList, PyTuple};
 use pyo3::{import_exception, wrap_pyfunction};
 use serde_json::Value;
 
@@ -16,7 +15,7 @@ use serde::ser::{self, Serialize, SerializeMap, SerializeSeq, Serializer};
 #[derive(Debug, Fail)]
 pub enum HyperJsonError {
     #[fail(display = "Conversion error: {}", error)]
-    InvalidConversion { error: serde_json::Error },
+    InvalidConversion { error: serde_dhall::Error },
     #[fail(display = "Python Runtime exception: {}", error)]
     PyErr { error: String },
     #[fail(display = "Dictionary key is not a string: {:?}", obj)]
@@ -32,8 +31,8 @@ pub enum HyperJsonError {
     // NoneError { s: String },
 }
 
-impl From<serde_json::Error> for HyperJsonError {
-    fn from(error: serde_json::Error) -> HyperJsonError {
+impl From<serde_dhall::Error> for HyperJsonError {
+    fn from(error: serde_dhall::Error) -> HyperJsonError {
         HyperJsonError::InvalidConversion { error }
     }
 }
@@ -82,16 +81,7 @@ pub fn load(py: Python, fp: PyObject, kwargs: Option<&PyDict>) -> PyResult<PyObj
     let _success = io.call_method("seek", (0,), None);
 
     let s_obj = io.call_method0("read")?;
-    loads(
-        py,
-        s_obj.to_object(py),
-        None,
-        None,
-        None,
-        None,
-        None,
-        kwargs,
-    )
+    loads(py, s_obj.to_object(py), None, None, None, kwargs)
 }
 
 // This function is a poor man's implementation of
@@ -105,42 +95,10 @@ pub fn loads(
     encoding: Option<PyObject>,
     cls: Option<PyObject>,
     object_hook: Option<PyObject>,
-    parse_float: Option<PyObject>,
-    parse_int: Option<PyObject>,
     kwargs: Option<&PyDict>,
 ) -> PyResult<PyObject> {
-    // if let Some(kwargs) = kwargs {
-    //     for (key, val) in kwargs.iter() {
-    //         println!("{} = {}", key, val);
-    //     }
-    // }
-
-    // if args.len() == 0 {
-    //     // TODO: This is the wrong error message.
-    //     return Err(PyLookupError::py_err("oh no"));
-    // }
-    // if args.len() >= 2 {
-    //     // return Err(PyTypeError::py_err(format!(
-    //     //     "Unknown encoding: {}",
-    //     //     args.get_item(1).to_string()
-    //     // )));
-    //     return Err(PyLookupError::py_err(
-    //         "loads() takes exactly 1 argument (2 given)",
-    //     ));
-    // }
-    // let s = args.get_item(0).to_string();
-
     // This was moved out of the Python module code to enable benchmarking.
-    loads_impl(
-        py,
-        s,
-        encoding,
-        cls,
-        object_hook,
-        parse_float,
-        parse_int,
-        kwargs,
-    )
+    loads_impl(py, s, encoding, cls, object_hook, kwargs)
 }
 
 #[pyfunction]
@@ -168,8 +126,9 @@ pub fn dumps(
             None => false,
         },
     };
-    let s: Result<String, HyperJsonError> =
-        serde_json::to_string(&v).map_err(|error| HyperJsonError::InvalidConversion { error });
+    let s: Result<String, HyperJsonError> = serde_dhall::serialize(&v)
+        .to_string()
+        .map_err(|error| HyperJsonError::InvalidConversion { error });
     Ok(s?.to_object(py))
 }
 
@@ -210,8 +169,8 @@ fn dhall(_py: Python, m: &PyModule) -> PyResult<()> {
 
     m.add_wrapped(wrap_pyfunction!(load))?;
     m.add_wrapped(wrap_pyfunction!(loads))?;
-    //m.add_wrapped(wrap_pyfunction!(dump))?;
-    //m.add_wrapped(wrap_pyfunction!(dumps))?;
+    m.add_wrapped(wrap_pyfunction!(dump))?;
+    m.add_wrapped(wrap_pyfunction!(dumps))?;
 
     Ok(())
 }
@@ -221,7 +180,7 @@ pub fn from_json(py: Python, json: Value) -> Result<PyObject, PyErr> {
     macro_rules! obj {
         ($x:ident) => {
             Ok($x.to_object(py))
-        }
+        };
     }
 
     match json {
@@ -262,24 +221,20 @@ pub fn loads_impl(
     _encoding: Option<PyObject>,
     _cls: Option<PyObject>,
     _object_hook: Option<PyObject>,
-    parse_float: Option<PyObject>,
-    parse_int: Option<PyObject>,
     _kwargs: Option<&PyDict>,
 ) -> PyResult<PyObject> {
     let string_result: Result<String, _> = s.extract(py);
     match string_result {
         Ok(string) => {
-            let json_val: std::result::Result<serde_json::Value, _> = serde_dhall::from_str(&string).parse();
+            let json_val: std::result::Result<serde_json::Value, _> =
+                serde_dhall::from_str(&string).parse();
             match json_val {
                 Ok(val) => {
                     let py_obj = from_json(py, val).expect("from_json");
-                    return Ok(py_obj)
+                    return Ok(py_obj);
                 }
                 Err(e) => {
-                    return Err(PyTypeError::py_err(format!(
-                        "{:?}",
-                        e
-                    )));
+                    return Err(PyTypeError::py_err(format!("{:?}", e)));
                 }
             }
         }
@@ -409,44 +364,11 @@ impl<'p, 'a> Serialize for SerializePyObject<'p, 'a> {
     }
 }
 
-fn convert_special_floats(
-    py: Python,
-    s: &str,
-    _parse_int: &Option<PyObject>,
-) -> PyResult<PyObject> {
-    match s {
-        // TODO: If `allow_nan` is false (default: True), then this should be a ValueError
-        // https://docs.python.org/3/library/json.html
-        "NaN" => Ok(std::f64::NAN.to_object(py)),
-        "Infinity" => Ok(std::f64::INFINITY.to_object(py)),
-        "-Infinity" => Ok(std::f64::NEG_INFINITY.to_object(py)),
-        _ => Err(PyValueError::py_err(format!("Value: {:?}", s))),
-    }
-}
-
 #[derive(Copy, Clone)]
 struct HyperJsonValue<'a> {
     py: Python<'a>,
     parse_float: &'a Option<PyObject>,
     parse_int: &'a Option<PyObject>,
-}
-
-impl<'a> HyperJsonValue<'a> {
-    fn new(
-        py: Python<'a>,
-        parse_float: &'a Option<PyObject>,
-        parse_int: &'a Option<PyObject>,
-    ) -> HyperJsonValue<'a> {
-        // We cannot borrow the runtime here,
-        // because it wouldn't live long enough
-        // let gil = Python::acquire_gil();
-        // let py = gil.python();
-        HyperJsonValue {
-            py,
-            parse_float,
-            parse_int,
-        }
-    }
 }
 
 impl<'de, 'a> DeserializeSeed<'de> for HyperJsonValue<'a> {

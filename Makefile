@@ -8,7 +8,7 @@ help: ## This help message
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
 
 test-dhall: ## Builds the dhall binding
-	poetry run maturin build --manylinux 2010-unchecked -i python3.6
+	poetry run maturin build --manylinux off
 	pip install --force-reinstall target/wheels/dhall*.whl
 	python3 -c "import dhall; print(dhall.loads('True'))"
 
@@ -17,11 +17,11 @@ publish: ## Publish the binding
 
 .PHONY: build
 build: nightly dev-packages ## Builds Rust code and hyperjson Python modules
-	poetry run maturin build
+	poetry run maturin build --manylinux
 
 .PHONY: build-release
 build-release: nightly dev-packages ## Build hyperjson module in release mode
-	poetry run maturin build --release
+	poetry run maturin build --manylinux --release
 
 .PHONY: nightly
 nightly: ## Set rust compiler to nightly version

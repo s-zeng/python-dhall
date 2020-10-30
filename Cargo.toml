@@ -1,18 +1,18 @@
 [package]
 name = "dhall"
-version = "0.0.1"
-authors = ["Tristan Cacqueray <tdecacqu@redhat.com>"]
+version = "0.1.0"
+authors = ["Simon Zeng <contact@simonzeng.com", "Tristan Cacqueray <tdecacqu@redhat.com>"]
 description = "A Python module for reading Dhall lang"
 edition = "2018"
 license = "Apache-2.0"
-repository = "https://github.com/TristanCacqueray/python-dhall"
-homepage = "https://github.com/TristanCacqueray/python-dhall"
+repository = "https://github.com/s-zeng/python-dhall"
+homepage = "https://github.com/s-zeng/python-dhall"
 readme = "README.md"
 keywords = ["dhall", "python"]
 
 [package.metadata.maturin]
 classifier = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "License :: OSI Approved",
@@ -27,7 +27,7 @@ serde_json = "1.0.42"
 failure = "0.1.6"
 serde = "1.0.103"
 serde_derive = "1.0.103"
-serde_dhall = "0.5.0"
+serde_dhall = "0.8.0"
 pyo3 = "0.8.3"
 
 [lib]

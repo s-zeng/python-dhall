@@ -1,28 +1,31 @@
 [tool.poetry]
 name = "dhall"
-version = "0.0.1"
+version = "0.1.0"
 description = "A Python module for reading Dhall lang"
-authors = ["Tristan Cacqueray <tdecacqu@redhat.com>"]
+authors = ["Simon Zeng <contact@simonzeng.com>", "Tristan Cacqueray <tdecacqu@redhat.com>"]
 license = "Apache-2.0"
 readme = "README.md"
-repository = "https://github.com/TristanCacqueray/python-dhall"
+repository = "https://github.com/s-zeng/python-dhall"
 keywords = ["dhall", "python"]
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = "^3.8"
 
 [tool.poetry.dev-dependencies]
-pytest = "^3.5"
+pytest = "^4.3"
 pylint = "^1.9"
 flake8 = "^3.5"
 wheel = "*"
 pytest-runner = "*"
 pytest-benchmark = "*"
-simplejson = "*"
-ujson = "*"
-yajl = "*"
-orjson = { version = "*", markers = "python_version < '3.8'" }
-python-rapidjson = "*"
 hypothesis = "*"
 autopep8 = "*"
 maturin = "==0.7.7"
+
+# [build-system]
+# requires = ["maturin"]
+# build-backend = "maturin"
+
+# [tool.maturin]
+# bindings = "cffi"
+# manylinux = "on"
