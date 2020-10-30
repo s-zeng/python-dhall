@@ -9,7 +9,7 @@ repository = "https://github.com/s-zeng/python-dhall"
 keywords = ["dhall", "python"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.3"
@@ -29,3 +29,4 @@ maturin = "==0.7.7"
 # [tool.maturin]
 # bindings = "cffi"
 # manylinux = "on"
+
