@@ -45,7 +45,7 @@ jobs:
 
   build:
     runs-on: ${{ matrix.os }}
-    needs: lint
+    # needs: lint
     strategy:
       fail-fast: false
       matrix:
