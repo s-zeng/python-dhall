@@ -1,8 +1,13 @@
-import hyperjson
+import dhall
 
 
 def test_docs():
-    assert hyperjson.dumps([{"key": "value"}, 81, True]
-                           ) == '[{"key":"value"},81,true]'
-    assert hyperjson.loads("""[{"key": "value"}, 81, true]""") == [
-        {u'key': u'value'}, 81, True]
+    assert (
+        dhall.dumps({"keyA": 81, "keyB": True, "keyC": "value"})
+        == '{ keyA = 81, keyB = True, keyC = "value" }'
+    )
+    assert dhall.loads("""{ keyA = 81, keyB = True, keyC = "value" }""") == {
+        "keyA": 81,
+        "keyB": True,
+        "keyC": "value",
+    }
