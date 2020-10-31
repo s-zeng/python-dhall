@@ -160,7 +160,7 @@ jobs:
         if:  matrix.os == 'ubuntu-latest'
         env:
           MATURIN_PASSWORD: ${{ secrets.PYPI }}
-        run: poetry run maturin publish --manylinux off --username __token__ -r https://test.pypi.org/legacy/
+        run: poetry run maturin publish --manylinux 2010-unchecked --username __token__ -r https://test.pypi.org/legacy/
 
       - name: PyPi publish
         # if: github.event_name == 'release' && github.event.action == 'created'
