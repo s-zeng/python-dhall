@@ -100,7 +100,7 @@ jobs:
   #         cargo publish
 
   python-publish:
-    needs: build
+    # needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
