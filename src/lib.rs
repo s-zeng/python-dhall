@@ -7,7 +7,7 @@ use pyo3::exceptions::TypeError as PyTypeError;
 use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyDict, PyFloat, PyList, PyTuple};
 use pyo3::{import_exception, wrap_pyfunction};
-use serde_json::Value;
+use serde_dhall::{NumKind, SimpleValue};
 
 use serde::de::{self, DeserializeSeed, Deserializer, MapAccess, SeqAccess, Visitor};
 use serde::ser::{self, Serialize, SerializeMap, SerializeSeq, Serializer};
@@ -176,7 +176,7 @@ fn dhall(_py: Python, m: &PyModule) -> PyResult<()> {
 }
 
 /// Convert from a `serde_json::Value` to a `pyo3::object:PyObject`.
-pub fn from_json(py: Python, json: Value) -> Result<PyObject, PyErr> {
+pub fn from_json(py: Python, json: &SimpleValue) -> Result<PyObject, PyErr> {
     macro_rules! obj {
         ($x:ident) => {
             Ok($x.to_object(py))
@@ -184,34 +184,44 @@ pub fn from_json(py: Python, json: Value) -> Result<PyObject, PyErr> {
     }
 
     match json {
-        Value::Number(x) => {
-            if let Some(n) = x.as_u64() {
-                obj!(n)
-            } else if let Some(n) = x.as_i64() {
-                obj!(n)
-            } else if let Some(n) = x.as_f64() {
-                obj!(n)
-            } else {
-                Err(PyTypeError::py_err("Invalid number"))
+        SimpleValue::Num(x) => match x {
+            NumKind::Bool(n) => obj!(n),
+            NumKind::Natural(n) => obj!(n),
+            NumKind::Integer(n) => obj!(n),
+            NumKind::Double(n) => {
+                let d = f64::from(n.clone());
+                obj!(d)
             }
-        }
-        Value::String(x) => obj!(x),
-        Value::Bool(x) => obj!(x),
-        Value::Array(vec) => {
+        },
+        SimpleValue::Text(x) => obj!(x),
+        SimpleValue::Optional(o) => match o {
+            None => Ok(py.None()),
+            Some(b) => {
+                let n = b.as_ref();
+                from_json(py, n)
+            }
+        },
+        SimpleValue::List(vec) => {
             let mut elements = Vec::new();
             for item in vec {
                 elements.push(from_json(py, item)?);
             }
             obj!(elements)
         }
-        Value::Object(map) => {
+        SimpleValue::Record(map) => {
             let dict = PyDict::new(py);
             for (key, value) in map {
                 dict.set_item(key, from_json(py, value)?)?;
             }
             obj!(dict)
         }
-        Value::Null => Ok(py.None()),
+        SimpleValue::Union(name, val) => match val {
+            None => obj!(name),
+            Some(b) => {
+                let n = b.as_ref();
+                from_json(py, n)
+            }
+        },
     }
 }
 
@@ -226,11 +236,11 @@ pub fn loads_impl(
     let string_result: Result<String, _> = s.extract(py);
     match string_result {
         Ok(string) => {
-            let json_val: std::result::Result<serde_json::Value, _> =
+            let json_val: std::result::Result<serde_dhall::SimpleValue, _> =
                 serde_dhall::from_str(&string).parse();
             match json_val {
                 Ok(val) => {
-                    let py_obj = from_json(py, val).expect("from_json");
+                    let py_obj = from_json(py, &val).expect("from_json");
                     return Ok(py_obj);
                 }
                 Err(e) => {
@@ -279,42 +289,28 @@ impl<'p, 'a> Serialize for SerializePyObject<'p, 'a> {
         }
 
         cast!(|x: &PyDict| {
-            if self.sort_keys {
-                // TODO: this could be implemented more efficiently by building
-                // a `Vec<Cow<str>, &PyAny>` of the map entries, sorting
-                // by key, and serializing as in the `else` branch. That avoids
-                // buffering every map value into a serde_json::Value.
-                let no_sort_keys = SerializePyObject {
-                    py: self.py,
-                    obj: self.obj,
-                    sort_keys: false,
-                };
-                let jv = serde_json::to_value(no_sort_keys).map_err(ser::Error::custom)?;
-                jv.serialize(serializer)
-            } else {
-                let mut map = serializer.serialize_map(Some(x.len()))?;
-                for (key, value) in x {
-                    if key.is_none() {
-                        map.serialize_key("null")?;
-                    } else if let Ok(key) = key.extract::<bool>() {
-                        map.serialize_key(if key { "true" } else { "false" })?;
-                    } else if let Ok(key) = key.str() {
-                        let key = key.to_string().map_err(debug_py_err)?;
-                        map.serialize_key(&key)?;
-                    } else {
-                        return Err(ser::Error::custom(format_args!(
-                            "Dictionary key is not a string: {:?}",
-                            key
-                        )));
-                    }
-                    map.serialize_value(&SerializePyObject {
-                        py: self.py,
-                        obj: value,
-                        sort_keys: self.sort_keys,
-                    })?;
+            let mut map = serializer.serialize_map(Some(x.len()))?;
+            for (key, value) in x {
+                if key.is_none() {
+                    map.serialize_key("null")?;
+                } else if let Ok(key) = key.extract::<bool>() {
+                    map.serialize_key(if key { "true" } else { "false" })?;
+                } else if let Ok(key) = key.str() {
+                    let key = key.to_string().map_err(debug_py_err)?;
+                    map.serialize_key(&key)?;
+                } else {
+                    return Err(ser::Error::custom(format_args!(
+                        "Dictionary key is not a string: {:?}",
+                        key
+                    )));
                 }
-                map.end()
+                map.serialize_value(&SerializePyObject {
+                    py: self.py,
+                    obj: value,
+                    sort_keys: self.sort_keys,
+                })?;
             }
+            map.end()
         });
 
         cast!(|x: &PyList| {
