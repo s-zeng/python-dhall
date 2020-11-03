@@ -17,7 +17,7 @@ st_failing_json = st.recursive(
     lambda children: st.dictionaries(
         st.text(alphabet=string.digits, min_size=1) | st.sampled_from(keywords),
         children,
-        min_size=1
+        min_size=1,
     ),
 )
 
