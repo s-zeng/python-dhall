@@ -156,6 +156,9 @@ jobs:
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: pytest
+        run: poetry run pytest tests
+
       - name: PyPi publish
         if:  matrix.os == 'ubuntu-latest'
         env:

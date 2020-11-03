@@ -220,7 +220,7 @@ dependencies = [
 
 [[package]]
 name = "dhall-python"
-version = "0.1.1"
+version = "0.0.1"
 dependencies = [
  "failure",
  "pyo3",
