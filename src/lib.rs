@@ -202,18 +202,19 @@ pub fn from_json(py: Python, json: &SimpleValue) -> Result<PyObject, PyErr> {
             }
         },
         SimpleValue::List(vec) => {
-            let mut elements = Vec::new();
-            for item in vec {
-                elements.push(from_json(py, item)?);
-            }
-            obj!(elements)
+            let solution = vec
+                .iter()
+                .map(|i| from_json(py, i).unwrap())
+                .collect::<Vec<_>>();
+            obj!(solution)
         }
         SimpleValue::Record(map) => {
-            let dict = PyDict::new(py);
-            for (key, value) in map {
-                dict.set_item(key, from_json(py, value)?)?;
-            }
-            obj!(dict)
+            // TODO: put an omit_nones option here
+            let solution: std::collections::HashMap<_, _> = map
+                .iter()
+                .map(|(key, value)| (key.clone(), from_json(py, value).unwrap()))
+                .collect();
+            obj!(solution)
         }
         SimpleValue::Union(name, val) => match val {
             None => obj!(name),

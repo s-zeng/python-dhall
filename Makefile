@@ -8,7 +8,7 @@ help: ## This help message
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
 
 test-dhall: ## Builds the dhall binding
-	poetry run maturin build --manylinux off
+	poetry run maturin build --manylinux off --release
 	pip install --force-reinstall target/wheels/dhall*.whl
 	python3 -c "import dhall; print(dhall.loads('True'))"
 
