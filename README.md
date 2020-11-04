@@ -5,7 +5,7 @@
 Install using pip:
 
 ```shell
-python3 -m pip install --user dhall
+python3 -m pip install --user dhall-python
 ```
 
 Supports Windows, Mac OS, and Linux (with libssl.so.1 and libcrypto.so.1)
