@@ -3,7 +3,6 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/s-zeng/dhall-python/graphs/commit-activity)
 [![CI status](https://img.shields.io/github/workflow/status/s-zeng/dhall-python/CI?style=flat-square)](https://github.com/s-zeng/dhall-python/actions)
 [![PyPI version shields.io](https://img.shields.io/pypi/v/dhall.svg)](https://pypi.python.org/pypi/dhall/)
-[![PyPI pyversions](https://img.shields.io/pypi/pyversions/dhall.svg)](https://pypi.python.org/pypi/dhall/)
 
 Dhall is a programmable configuration language optimized for
 maintainability.
