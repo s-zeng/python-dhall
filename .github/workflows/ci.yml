@@ -99,6 +99,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install poetry
+          touch Cargo.toml.orig
           poetry install
 
       - name: Build Python package
