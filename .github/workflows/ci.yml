@@ -135,10 +135,10 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         env:
           MATURIN_PASSWORD: ${{ secrets.PYPI }}
-        run: poetry run maturin publish --manylinux 2010-unchecked --username __token__ --interpreter python${{matrix.python_version}}
+        run: poetry run maturin publish --no-sdist --manylinux 2010-unchecked --username __token__ --interpreter python${{matrix.python_version}}
 
       - name: PyPi publish
         if: matrix.os != 'ubuntu-latest'
         env:
           MATURIN_PASSWORD: ${{ secrets.PYPI }}
-        run: poetry run maturin publish --username __token__ --interpreter python${{matrix.python_version}}
+        run: poetry run maturin publish --no-sdist --username __token__ --interpreter python${{matrix.python_version}}
