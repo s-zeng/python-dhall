@@ -1,1 +1,1 @@
-from .dhall import dumps, dump, loads, load, __version__
+from .dhall import __version__, dump, dumps, load, loads
