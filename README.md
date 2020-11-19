@@ -1,6 +1,6 @@
 # dhall-python
 
-`dhall-python` contains (WIP) [Dhall][dhall-lang] bindings for Python using the [rust][dhall-rust] implementation.
+`dhall-python` contains [Dhall][dhall-lang] bindings for Python using the [rust][dhall-rust] implementation.
 
 Install using pip:
 
@@ -70,13 +70,10 @@ After that, you can compile the current version of dhall-python and execute all 
 ```
 make install
 make test
-make bench
 ```
 
 🤫 Pssst!... run `make help` to learn more.
 
 
-# Links
-
-- [dhall-rust](https://github.com/Nadrieril/dhall-rust)
-- [dhall-lang](https://dhall-lang.org)
+[dhall-rust]: https://github.com/Nadrieril/dhall-rust
+[dhall-lang]: https://dhall-lang.org
