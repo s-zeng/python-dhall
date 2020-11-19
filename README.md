@@ -1,21 +1,15 @@
-# python-dhall
+# dhall-python
 
-`python-dhall` contains (WIP) [Dhall][dhall-lang] bindings for Python using the [rust][dhall-rust] implementation.
+`dhall-python` contains (WIP) [Dhall][dhall-lang] bindings for Python using the [rust][dhall-rust] implementation.
 
 Install using pip:
 
 ```shell
-python3 -m pip install --user dhall-python
+python3 -m pip install --user dhall
 ```
 
 Supports Windows, Mac OS, and Linux (with libssl.so.1 and libcrypto.so.1)
 
-The binding implements a `loads` function that returns a python object similar to JSON:
-
-```shell
-python3 -c 'import dhall; print(dhall.loads("""{ version = 21 + 21, name = "a test", req = ["itemA", "itemB"], bool = True && False }"""))'
-{'bool': False, 'name': 'a test', 'req': ['itemA', 'itemB'], 'version': 42}
-```
 ## Usage
 
 python-dhall implements a similar API to Python's [json
@@ -71,7 +65,7 @@ If you have already installed the `nightly` version, make sure it is up-to-date:
 rustup update nightly
 ```
 
-After that, you can compile the current version of hyperjson and execute all tests and benchmarks with the following commands:
+After that, you can compile the current version of dhall-python and execute all tests and benchmarks with the following commands:
 
 ```
 make install
@@ -84,5 +78,5 @@ make bench
 
 # Links
 
-[dhall-rust]: https://github.com/Nadrieril/dhall-rust
-[dhall-lang]: https://dhall-lang.org
+- [dhall-rust](https://github.com/Nadrieril/dhall-rust)
+- [dhall-lang](https://dhall-lang.org)
