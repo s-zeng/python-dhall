@@ -5,8 +5,30 @@
 [![PyPI version shields.io](https://img.shields.io/pypi/v/dhall.svg)](https://pypi.python.org/pypi/dhall/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/dhall.svg)](https://pypi.python.org/pypi/dhall/)
 
+Dhall is a programmable configuration language optimized for
+maintainability.
 
-`dhall-python` contains [Dhall][dhall-lang] bindings for Python using the [rust][dhall-rust] implementation.
+You can think of Dhall as: JSON + functions + types + imports
+
+Note that while Dhall is programmable, Dhall is not Turing-complete.  Many
+of Dhall's features take advantage of this restriction to provide stronger
+safety guarantees and more powerful tooling.
+
+You can try the language live in your browser by visiting the official website:
+
+* [https://dhall-lang.org](http://dhall-lang.org/)
+
+# `dhall-python`
+
+`dhall-python` contains [Dhall][dhall-lang] bindings for Python using the 
+[rust][dhall-rust] implementation. It is meant to be used to integrate Dhall 
+into your python applications.
+
+If you only want to convert Dhall to/from JSON or YAML, you should use the
+official tooling instead; instructions can be found
+[here](https://docs.dhall-lang.org/tutorials/Getting-started_Generate-JSON-or-YAML.html).
+
+## Usage
 
 Install using pip:
 
@@ -15,8 +37,6 @@ python3 -m pip install --user dhall
 ```
 
 Supports Windows, Mac OS, and Linux (with libssl.so.1 and libcrypto.so.1)
-
-# Usage
 
 python-dhall implements a similar API to Python's [json
 module](https://docs.python.org/3/library/json.html):
