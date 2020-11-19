@@ -117,7 +117,7 @@ jobs:
       # https://stackoverflow.com/a/52481267/270334
       - name: Install wheels
         if:  matrix.os == 'windows-latest'
-        run: pip install --find-links=target\wheels dhall-python
+        run: pip install --find-links=target\wheels dhall
 
       - name: Install wheels
         if:  matrix.os != 'windows-latest'
