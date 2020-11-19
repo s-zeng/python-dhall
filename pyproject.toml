@@ -5,6 +5,7 @@ description = "A Python module for loading and dumping Dhall configs"
 authors = ["Simon Zeng <contact@simonzeng.com>", "Tristan Cacqueray <tdecacqu@redhat.com>", "Matthias Endler <matthias-endler@gmx.net>"]
 license = "Apache-2.0"
 readme = "README.md"
+packages = [{ include = "dhall" }]
 repository = "https://github.com/s-zeng/dhall-python"
 keywords = ["dhall", "python"]
 
@@ -22,11 +23,11 @@ hypothesis = "*"
 autopep8 = "*"
 maturin = "==0.7.7"
 
-# [build-system]
-# requires = ["maturin"]
-# build-backend = "maturin"
+[build-system]
+requires = ["maturin"]
+build-backend = "maturin"
 
-# [tool.maturin]
-# bindings = "cffi"
-# manylinux = "on"
-
+[tool.maturin]
+bindings = "cffi"
+manylinux = "2010-unchecked"
+sdist-include = ["dhall/*"]

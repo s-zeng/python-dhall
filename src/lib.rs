@@ -81,7 +81,7 @@ pub fn load(py: Python, fp: PyObject, kwargs: Option<&PyDict>) -> PyResult<PyObj
     let _success = io.call_method("seek", (0,), None);
 
     let s_obj = io.call_method0("read")?;
-    loads(py, s_obj.to_object(py), None, None, None, kwargs)
+    loads(py, s_obj.to_object(py), kwargs)
 }
 
 // This function is a poor man's implementation of
@@ -89,16 +89,9 @@ pub fn load(py: Python, fp: PyObject, kwargs: Option<&PyDict>) -> PyResult<PyObj
 // because we have none of these types under our control.
 // Note: Encoding param is deprecated and ignored.
 #[pyfunction]
-pub fn loads(
-    py: Python,
-    s: PyObject,
-    encoding: Option<PyObject>,
-    cls: Option<PyObject>,
-    object_hook: Option<PyObject>,
-    kwargs: Option<&PyDict>,
-) -> PyResult<PyObject> {
+pub fn loads(py: Python, s: PyObject, kwargs: Option<&PyDict>) -> PyResult<PyObject> {
     // This was moved out of the Python module code to enable benchmarking.
-    loads_impl(py, s, encoding, cls, object_hook, kwargs)
+    loads_impl(py, s, kwargs)
 }
 
 #[pyfunction]
@@ -107,14 +100,6 @@ pub fn loads(
 pub fn dumps(
     py: Python,
     obj: PyObject,
-    _skipkeys: Option<bool>,
-    ensure_ascii: Option<PyObject>,
-    _check_circular: Option<PyObject>,
-    _allow_nan: Option<PyObject>,
-    _cls: Option<PyObject>,
-    _indent: Option<PyObject>,
-    _separators: Option<PyObject>,
-    _default: Option<PyObject>,
     sort_keys: Option<PyObject>,
     _kwargs: Option<&PyDict>,
 ) -> PyResult<PyObject> {
@@ -137,20 +122,9 @@ pub fn dump(
     py: Python,
     obj: PyObject,
     fp: PyObject,
-    _skipkeys: Option<PyObject>,
-    _ensure_ascii: Option<PyObject>,
-    _check_circular: Option<PyObject>,
-    _allow_nan: Option<PyObject>,
-    _cls: Option<PyObject>,
-    _indent: Option<PyObject>,
-    _separators: Option<PyObject>,
-    _default: Option<PyObject>,
-    _sort_keys: Option<PyObject>,
     _kwargs: Option<&PyDict>,
 ) -> PyResult<PyObject> {
-    let s = dumps(
-        py, obj, None, None, None, None, None, None, None, None, None, None,
-    )?;
+    let s = dumps(py, obj, None, None)?;
     let fp_ref: &PyAny = fp.extract(py)?;
     fp_ref.call_method1("write", (s,))?;
     // TODO: Will this always return None?
@@ -226,14 +200,7 @@ pub fn from_json(py: Python, json: &SimpleValue) -> Result<PyObject, PyErr> {
     }
 }
 
-pub fn loads_impl(
-    py: Python,
-    s: PyObject,
-    _encoding: Option<PyObject>,
-    _cls: Option<PyObject>,
-    _object_hook: Option<PyObject>,
-    _kwargs: Option<&PyDict>,
-) -> PyResult<PyObject> {
+pub fn loads_impl(py: Python, s: PyObject, _kwargs: Option<&PyDict>) -> PyResult<PyObject> {
     let string_result: Result<String, _> = s.extract(py);
     match string_result {
         Ok(string) => {
