@@ -2,7 +2,7 @@
 name = "dhall"
 version = "0.0.3"
 authors = ["Simon Zeng <contact@simonzeng.com", "Tristan Cacqueray <tdecacqu@redhat.com>", "Matthias Endler <matthias-endler@gmx.net>"]
-description = "A Python module for loading and dumping Dhall configs"
+description = "Python bindings for dhall, a functional configuration language"
 edition = "2018"
 license = "Apache-2.0"
 repository = "https://github.com/s-zeng/dhall-python"
