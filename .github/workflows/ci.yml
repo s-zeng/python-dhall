@@ -13,6 +13,7 @@ on:
 
 jobs:
   lint:
+    if: github.event_name != 'release'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,6 +38,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     needs: lint
+    if: github.event_name != 'release'
     strategy:
       fail-fast: false
       matrix:
@@ -56,6 +58,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install poetry
+          touch Cargo.toml.orig
           poetry install
 
       - name: Install latest nightly
@@ -71,7 +74,7 @@ jobs:
         run: poetry run pytest tests
 
   python-publish:
-    needs: build
+    if: github.event_name == 'release' && github.event.action == 'created'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -128,13 +131,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: PyPi publish
-        if: github.event_name == 'release' && github.event.action == 'created' && matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest'
         env:
           MATURIN_PASSWORD: ${{ secrets.PYPI }}
         run: poetry run maturin publish --manylinux 2010-unchecked --username __token__ --interpreter python${{matrix.python_version}}
 
       - name: PyPi publish
-        if: github.event_name == 'release' && github.event.action == 'created' && matrix.os != 'ubuntu-latest'
+        if: matrix.os != 'ubuntu-latest'
         env:
           MATURIN_PASSWORD: ${{ secrets.PYPI }}
         run: poetry run maturin publish --username __token__ --interpreter python${{matrix.python_version}}
