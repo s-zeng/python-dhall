@@ -1,4 +1,4 @@
-<img src="https://github.com/dhall-lang/dhall-lang/blob/master/img/dhall-logo.svg" width="600" alt="Dhall Logo">
+[![Dhall logo](https://github.com/dhall-lang/dhall-lang/blob/master/img/dhall-logo.svg)](https://dhall-lang.org/)
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/s-zeng/dhall-python/graphs/commit-activity)
 [![CI status](https://img.shields.io/github/workflow/status/s-zeng/dhall-python/CI?style=flat-square)](https://github.com/s-zeng/dhall-python/actions)
