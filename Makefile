@@ -7,11 +7,11 @@ publish: ## Publish the binding
 
 .PHONY: build
 build: nightly dev-packages ## Builds Rust code and dhall-python Python modules
-	poetry run maturin build --manylinux
+	poetry run maturin build --manylinux 2010-unchecked
 
 .PHONY: build-release
 build-release: nightly dev-packages ## Build dhall-python module in release mode
-	poetry run maturin build --manylinux --release
+	poetry run maturin build --manylinux 2010-unchecked --release
 
 .PHONY: nightly
 nightly: ## Set rust compiler to nightly version

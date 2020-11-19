@@ -195,6 +195,18 @@ dependencies = [
 
 [[package]]
 name = "dhall"
+version = "0.0.3"
+dependencies = [
+ "failure",
+ "pyo3",
+ "serde",
+ "serde_derive",
+ "serde_dhall",
+ "serde_json",
+]
+
+[[package]]
+name = "dhall"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8e2aa2abb16c2ef064fbc45f5163be5c5ff990e8584e54fb1c8f6e318107289"
@@ -216,18 +228,6 @@ dependencies = [
  "sha2",
  "url",
  "walkdir",
-]
-
-[[package]]
-name = "dhall-python"
-version = "0.0.2"
-dependencies = [
- "failure",
- "pyo3",
- "serde",
- "serde_derive",
- "serde_dhall",
- "serde_json",
 ]
 
 [[package]]
@@ -1340,7 +1340,7 @@ version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "313ac1225c35cd2760b4124d39fa4df19b4a5e29edd55a3eb3fc0b01940f8707"
 dependencies = [
- "dhall",
+ "dhall 0.8.0",
  "dhall_proc_macros",
  "doc-comment",
  "serde",

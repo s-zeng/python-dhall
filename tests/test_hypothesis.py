@@ -1,7 +1,9 @@
+import string
+
 import dhall
 import pytest
-import string
-from hypothesis import given, assume, settings, reproduce_failure, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
 
 # min, max: RFC 7159
 st_naturals = st.integers(min_value=0, max_value=(2 ** 53) - 1)
