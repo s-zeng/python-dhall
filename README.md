@@ -1,4 +1,10 @@
-# dhall-python
+<img src="https://github.com/dhall-lang/dhall-lang/blob/master/img/dhall-logo.svg" width="600" alt="Dhall Logo">
+
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![CI status](https://img.shields.io/github/workflow/status/s-zeng/dhall-python/CI?style=flat-square)](https://github.com/s-zeng/dhall-python/actions)
+[![PyPI version shields.io](https://img.shields.io/pypi/v/dhall.svg)](https://pypi.python.org/pypi/dhall/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/dhall.svg)](https://pypi.python.org/pypi/dhall/)
+
 
 `dhall-python` contains [Dhall][dhall-lang] bindings for Python using the [rust][dhall-rust] implementation.
 
@@ -10,7 +16,7 @@ python3 -m pip install --user dhall
 
 Supports Windows, Mac OS, and Linux (with libssl.so.1 and libcrypto.so.1)
 
-## Usage
+# Usage
 
 python-dhall implements a similar API to Python's [json
 module](https://docs.python.org/3/library/json.html):
@@ -33,7 +39,7 @@ python-dhall is licensed under either of
 
 at your option.
 
-## Contribution
+# Contribution
 
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in python-dhall by you, as defined in the Apache-2.0 license, shall
@@ -42,7 +48,7 @@ be dual licensed as above, without any additional terms or conditions.
 All contributions are welcome! If you spot any bugs, or have any requests, 
 issues and PRs are always welcome.
 
-## Developer guide
+# Developer guide
 
 This project uses [poetry](https://python-poetry.org/docs/) for managing the development environment. If you don't have it installed, run
 
