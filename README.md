@@ -1,7 +1,7 @@
 [![Dhall logo](https://github.com/dhall-lang/dhall-lang/blob/master/img/dhall-logo.svg)](https://dhall-lang.org/)
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/s-zeng/dhall-python/graphs/commit-activity)
-[![CI status](https://img.shields.io/github/workflow/status/s-zeng/dhall-python/CI?style=flat-square)](https://github.com/s-zeng/dhall-python/actions)
+[![CI status](https://img.shields.io/github/workflow/status/s-zeng/dhall-python/CI)](https://github.com/s-zeng/dhall-python/actions)
 [![PyPI version shields.io](https://img.shields.io/pypi/v/dhall.svg)](https://pypi.python.org/pypi/dhall/)
 
 Dhall is a programmable configuration language optimized for
@@ -32,12 +32,12 @@ official tooling instead; instructions can be found
 Install using pip:
 
 ```shell
-python3 -m pip install --user dhall
+pip install dhall
 ```
 
 Supports Windows, Mac OS, and Linux (with libssl.so.1 and libcrypto.so.1)
 
-python-dhall implements a similar API to Python's [json
+dhall-python implements a similar API to Python's [json
 module](https://docs.python.org/3/library/json.html):
 
 ```python
@@ -50,7 +50,7 @@ module](https://docs.python.org/3/library/json.html):
 
 # License
 
-python-dhall is licensed under either of
+dhall-python is licensed under either of
 
 - Apache License, Version 2.0, (LICENSE-APACHE or
   http://www.apache.org/licenses/LICENSE-2.0)
