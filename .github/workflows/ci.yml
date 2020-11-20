@@ -77,7 +77,7 @@ jobs:
     if: github.event_name == 'release' && github.event.action == 'created'
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -97,6 +97,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cargo install cargo-bump
           python -m pip install --upgrade pip
           pip install poetry
           touch Cargo.toml.orig
@@ -142,3 +143,17 @@ jobs:
         env:
           MATURIN_PASSWORD: ${{ secrets.PYPI }}
         run: poetry run maturin publish --no-sdist --username __token__ --interpreter python${{matrix.python_version}}
+
+      - name: Bump version
+        run: |
+          cargo bump patch
+          poetry version patch
+
+      - uses: EndBug/add-and-commit@v5
+        with:
+          add: 'Cargo.toml pyproject.toml'
+          message: 'Bump version (Automatic commit from github actions)'
+          author_name: Github Actions
+          author_email: contact@simonzeng.com
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
