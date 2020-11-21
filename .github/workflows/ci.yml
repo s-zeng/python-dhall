@@ -97,7 +97,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cargo install cargo-bump
           python -m pip install --upgrade pip
           pip install poetry
           touch Cargo.toml.orig
@@ -144,6 +143,31 @@ jobs:
           MATURIN_PASSWORD: ${{ secrets.PYPI }}
         run: poetry run maturin publish --no-sdist --username __token__ --interpreter python${{matrix.python_version}}
 
+
+  bump:
+    if: github.event_name == 'release' && github.event.action == 'created'
+    needs: python-publish
+    runs-on: ubuntu-latest
+      - uses: actions/checkout@v1
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+      - name: Install latest nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+
+      - name: Install dependencies
+        run: |
+          cargo install cargo-bump
+          python -m pip install --upgrade pip
+          pip install poetry
+          touch Cargo.toml.orig
+          poetry install
+
       - name: Bump version
         run: |
           cargo bump patch
@@ -153,6 +177,7 @@ jobs:
         with:
           add: 'Cargo.toml pyproject.toml'
           message: 'Bump version (Automatic commit from github actions)'
+          branch: master
           author_name: Github Actions
           author_email: contact@simonzeng.com
         env:
