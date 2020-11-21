@@ -149,7 +149,7 @@ jobs:
     needs: python-publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - uses: actions/setup-python@v1
         with:
@@ -174,12 +174,10 @@ jobs:
           cargo bump patch
           poetry version patch
 
-      - uses: EndBug/add-and-commit@v5
-        with:
-          add: 'Cargo.toml pyproject.toml'
-          message: 'Bump version (Automatic commit from github actions)'
-          branch: master
-          author_name: Github Actions
-          author_email: contact@simonzeng.com
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add Cargo.toml pyproject.toml
+          git commit -m "Bump version (automatic commit)"
+          git push
