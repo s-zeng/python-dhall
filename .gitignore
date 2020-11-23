@@ -116,3 +116,5 @@ flame.svg
 perf.data
 perf.data.old
 Cargo.lock
+poetry.lock
+Cargo.toml.orig
