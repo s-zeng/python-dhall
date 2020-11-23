@@ -87,18 +87,18 @@ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poet
 export PATH="$HOME/.poetry/bin:$PATH"
 ```
 
-The project requires the `nightly` version of Rust.
+The project requires the latest `stable` version of Rust.
 
 Install it via `rustup`:
 
 ```
-rustup install nightly
+rustup install stable
 ```
 
-If you have already installed the `nightly` version, make sure it is up-to-date:
+If you have already installed the `stable` version, make sure it is up-to-date:
 
 ```
-rustup update nightly
+rustup update stable
 ```
 
 After that, you can compile the current version of dhall-python and execute all tests and benchmarks with the following commands:
