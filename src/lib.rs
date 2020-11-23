@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use std::fmt;
 use std::marker::PhantomData;
 
-use pyo3::exceptions::TypeError as PyTypeError;
+use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyDict, PyFloat, PyList, PyTuple};
 use pyo3::{import_exception, wrap_pyfunction};
@@ -13,7 +13,7 @@ use serde::de::{self, DeserializeSeed, Deserializer, MapAccess, SeqAccess, Visit
 use serde::ser::{self, Serialize, SerializeMap, SerializeSeq, Serializer};
 
 #[derive(Debug, Fail)]
-pub enum HyperJsonError {
+pub enum DhallPythonError {
     #[fail(display = "Conversion error: {}", error)]
     InvalidConversion { error: serde_dhall::Error },
     #[fail(display = "Python Runtime exception: {}", error)]
@@ -31,21 +31,21 @@ pub enum HyperJsonError {
     // NoneError { s: String },
 }
 
-impl From<serde_dhall::Error> for HyperJsonError {
-    fn from(error: serde_dhall::Error) -> HyperJsonError {
-        HyperJsonError::InvalidConversion { error }
+impl From<serde_dhall::Error> for DhallPythonError {
+    fn from(error: serde_dhall::Error) -> DhallPythonError {
+        DhallPythonError::InvalidConversion { error }
     }
 }
 
-impl From<HyperJsonError> for PyErr {
-    fn from(h: HyperJsonError) -> PyErr {
+impl From<DhallPythonError> for PyErr {
+    fn from(h: DhallPythonError) -> PyErr {
         match h {
-            HyperJsonError::InvalidConversion { error } => {
+            DhallPythonError::InvalidConversion { error } => {
                 PyErr::new::<PyTypeError, _>(format!("{}", error))
             }
             // TODO
-            HyperJsonError::PyErr { error: _error } => PyErr::new::<PyTypeError, _>("PyErr"),
-            HyperJsonError::InvalidCast { t: _t, e: _e } => {
+            DhallPythonError::PyErr { error: _error } => PyErr::new::<PyTypeError, _>("PyErr"),
+            DhallPythonError::InvalidCast { t: _t, e: _e } => {
                 PyErr::new::<PyTypeError, _>("InvalidCast")
             }
             _ => PyErr::new::<PyTypeError, _>("Unknown reason"),
@@ -53,11 +53,11 @@ impl From<HyperJsonError> for PyErr {
     }
 }
 
-impl From<PyErr> for HyperJsonError {
-    fn from(error: PyErr) -> HyperJsonError {
+impl From<PyErr> for DhallPythonError {
+    fn from(error: PyErr) -> DhallPythonError {
         // TODO: This should probably just have the underlying PyErr as an argument,
         // but this type is not `Sync`, so we just use the debug representation for now.
-        HyperJsonError::PyErr {
+        DhallPythonError::PyErr {
             error: format!("{:?}", error),
         }
     }
@@ -111,9 +111,9 @@ pub fn dumps(
             None => false,
         },
     };
-    let s: Result<String, HyperJsonError> = serde_dhall::serialize(&v)
+    let s: Result<String, DhallPythonError> = serde_dhall::serialize(&v)
         .to_string()
-        .map_err(|error| HyperJsonError::InvalidConversion { error });
+        .map_err(|error| DhallPythonError::InvalidConversion { error });
     Ok(s?.to_object(py))
 }
 
@@ -212,12 +212,12 @@ pub fn loads_impl(py: Python, s: PyObject, _kwargs: Option<&PyDict>) -> PyResult
                     return Ok(py_obj);
                 }
                 Err(e) => {
-                    return Err(PyTypeError::py_err(format!("{:?}", e)));
+                    return Err(PyTypeError::new_err(format!("{:?}", e)));
                 }
             }
         }
         Err(e) => {
-            return Err(PyTypeError::py_err(format!(
+            return Err(PyTypeError::new_err(format!(
                 "the Dhall object must be str: {:?}",
                 e
             )));
@@ -264,7 +264,7 @@ impl<'p, 'a> Serialize for SerializePyObject<'p, 'a> {
                 } else if let Ok(key) = key.extract::<bool>() {
                     map.serialize_key(if key { "true" } else { "false" })?;
                 } else if let Ok(key) = key.str() {
-                    let key = key.to_string().map_err(debug_py_err)?;
+                    let key = key.to_str().map_err(debug_py_err)?;
                     map.serialize_key(&key)?;
                 } else {
                     return Err(ser::Error::custom(format_args!(
@@ -354,7 +354,7 @@ impl<'a> HyperJsonValue<'a> {
     {
         match parser.call1(self.py, (value.to_string(),)) {
             Ok(primitive) => Ok(primitive),
-            Err(err) => Err(de::Error::custom(HyperJsonError::from(err))),
+            Err(err) => Err(de::Error::custom(DhallPythonError::from(err))),
         }
     }
 }
