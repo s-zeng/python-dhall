@@ -61,10 +61,10 @@ jobs:
           touch Cargo.toml.orig
           poetry install
 
-      - name: Install latest nightly
+      - name: Install rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: stable
           override: true
 
       - name: Build Python package
@@ -89,10 +89,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install latest nightly
+      - name: Install rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: stable
           override: true
 
       - name: Install dependencies
@@ -157,10 +157,10 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Install latest nightly
+      - name: Install rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: stable
           override: true
 
       - name: Install dependencies
