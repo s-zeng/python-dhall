@@ -36,7 +36,17 @@ Install using pip:
 pip install dhall
 ```
 
-Supports Windows, Mac OS, and Linux (with libssl.so.1 and libcrypto.so.1)
+Supports the following:
+
+- Operating Systems
+  - Windows
+  - Mac OS
+  - Linux (with libssl.so.1 and libcrypto.so.1)
+- Python versions
+  - 3.6
+  - 3.7
+  - 3.8
+  - 3.9
 
 dhall-python implements a similar API to Python's [json
 module](https://docs.python.org/3/library/json.html):
