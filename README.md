@@ -1,7 +1,7 @@
 [![Dhall logo](https://github.com/dhall-lang/dhall-lang/blob/master/img/dhall-logo.svg)](https://dhall-lang.org/)
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/s-zeng/dhall-python/graphs/commit-activity)
-[![CI status](https://img.shields.io/github/workflow/status/s-zeng/dhall-python/CI)](https://github.com/s-zeng/dhall-python/actions)
+[![CI status](https://github.com/s-zeng/dhall-python/workflows/CI/badge.svg)](https://github.com/s-zeng/dhall-python/actions)
 [![PyPI version shields.io](https://img.shields.io/pypi/v/dhall.svg)](https://pypi.python.org/pypi/dhall/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/dhall.svg)](https://pypistats.org/packages/dhall)
 
