@@ -321,8 +321,8 @@ impl<'p, 'a> Serialize for SerializePyObject<'p, 'a> {
                 repr,
             ))),
             Err(_) => Err(ser::Error::custom(format_args!(
-                "Type is not JSON serializable: {}",
-                self.obj.get_type().name().into_owned(),
+                "Type is not JSON serializable: {:?}",
+                self.obj.get_type().name(),
             ))),
         }
     }
