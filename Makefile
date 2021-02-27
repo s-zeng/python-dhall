@@ -6,19 +6,15 @@ publish: ## Publish the binding
 	twine upload target/wheels/dhall*.whl
 
 .PHONY: build
-build: nightly dev-packages ## Builds Rust code and dhall-python Python modules
-	poetry run maturin build --manylinux 2010-unchecked --rustc-extra-args="-Wall"
+build: dev-packages ## Builds Rust code and dhall-python Python modules
+	poetry run maturin build --manylinux 2010 --skip-auditwheel --rustc-extra-args="-Wall"
 
 .PHONY: build-release
-build-release: nightly dev-packages ## Build dhall-python module in release mode
-	poetry run maturin build --manylinux 2010-unchecked --release
-
-.PHONY: nightly
-nightly: ## Set rust compiler to nightly version
-	rustup override set nightly
+build-release: dev-packages ## Build dhall-python module in release mode
+	poetry run maturin build --manylinux 2010 --skip-auditwheel --release
 
 .PHONY: install
-install: nightly dev-packages ## Install dhall-python module into current virtualenv
+install: dev-packages ## Install dhall-python module into current virtualenv
 	poetry run maturin develop --release
 
 .PHONY: publish

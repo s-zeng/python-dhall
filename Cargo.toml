@@ -23,12 +23,12 @@ classifier = [
 ]
 
 [dependencies]
-serde_json = "1.0.42"
-failure = "0.1.6"
-serde = "1.0.103"
-serde_derive = "1.0.103"
-serde_dhall = "0.10.0"
-pyo3 = "0.12.3"
+serde_json = "1"
+serde = "1"
+serde_derive = "1"
+serde_dhall = "0.10"
+pyo3 = "0.13"
+thiserror = "1"
 
 [lib]
 name = "dhall"
